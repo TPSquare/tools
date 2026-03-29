@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Kịch bản video</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main>
+    <div id="loading-log"></div>
+    <div class="center">
+      <div id="filter">
+        <span>Người diễn:</span>
+        <select class="actor-search" name="actor-search"></select>
+        <span>Địa điểm:</span>
+        <select class="location-search" name="location-search"></select>
+      </div>
+    </div>
+    <div class="title">Các cảnh quay</div>
+    <table id="scenes"></table>
+    <div class="center">
+      <div id="actors-statistics">
+        <div class="title">Thống kê số vai đã có</div>
+      </div>
+    </div>
+  </main>
+  <div id="sample-videos-wrapper">
+    <div id="sample-videos-block"></div>
+  </div>
+  <script type="module" src="./script.js"></script>
+</body>
+
+</html>
