@@ -12,7 +12,11 @@ class PreEditOrganizer:
         self.root.title("Công cụ sắp xếp tiền edit video")
         self.root.geometry("950x750")
 
-        self.valid_extensions = {".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".mkv"}
+        self.valid_extensions = {
+            ".jpg", ".jpeg", ".png", ".gif", 
+            ".mp4", ".mov", ".avi", ".mkv",
+            ".mp3", ".wav", ".aac", ".m4a"
+        }
         self.input_dir = ""
         self.file_map = {}
 
@@ -161,7 +165,7 @@ class PreEditOrganizer:
 
     def select_input(self):
         self.input_dir = filedialog.askdirectory(
-            title="Chọn thư mục chứa ảnh/video gốc"
+            title="Chọn thư mục chứa ảnh/video/âm thanh gốc"
         )
         if self.input_dir:
             self.lbl_input.config(text=self.input_dir)
@@ -220,18 +224,22 @@ class PreEditOrganizer:
         ext = os.path.splitext(filename)[1].lower()
 
         try:
-            if ext in {".mp4", ".mov", ".avi", ".mkv"}:
-                self.lbl_img_preview.pack_forget()
+            if ext in {".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav", ".aac", ".m4a"}:
                 media = self.vlc_instance.media_new(filepath)
                 self.player.set_media(media)
 
-                h = self.preview_area.winfo_id()
-                if platform.system() == "Windows":
-                    self.player.set_hwnd(h)
-                elif platform.system() == "Darwin":
-                    self.player.set_nsobject(h)
+                if ext in {".mp3", ".wav", ".aac", ".m4a"}:
+                    self.lbl_img_preview.pack(expand=True, fill=tk.BOTH)
+                    self.lbl_img_preview.config(image="", text=f"🎵 Đang phát âm thanh:\n{filename}")
                 else:
-                    self.player.set_xwindow(h)
+                    self.lbl_img_preview.pack_forget()
+                    h = self.preview_area.winfo_id()
+                    if platform.system() == "Windows":
+                        self.player.set_hwnd(h)
+                    elif platform.system() == "Darwin":
+                        self.player.set_nsobject(h)
+                    else:
+                        self.player.set_xwindow(h)
 
                 self.player.play()
             else:
@@ -330,17 +338,17 @@ class PreEditOrganizer:
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn thư mục nguồn trước!")
             return
 
-        total_items = self.listbox_done.size() + self.listbox_todo.size()
+        items_done = self.listbox_done.get(0, tk.END)
+        all_items = list(items_done) 
+
+        total_items = len(all_items)
         if total_items == 0:
-            messagebox.showinfo("Thông báo", "Không có file nào để đổi tên!")
+            messagebox.showinfo("Thông báo", "Không có file nào trong danh sách ĐÃ SẮP XẾP để đổi tên!")
             return
+            
         self.player.stop()
 
         try:
-            items_done = self.listbox_done.get(0, tk.END)
-            items_todo = self.listbox_todo.get(0, tk.END)
-            all_items = list(items_done) + list(items_todo)
-
             temp_renamed_files = []
 
             self.progress_bar["maximum"] = total_items * 2
@@ -375,7 +383,7 @@ class PreEditOrganizer:
             self.lbl_progress.config(text="Hoàn thành 100%!", fg="green")
             messagebox.showinfo(
                 "Thành công",
-                f"Đã đổi tên thành công {len(all_items)} file trực tiếp trong thư mục!",
+                f"Đã đổi tên thành công {len(all_items)} file!",
             )
 
             self.load_files()
